@@ -1,0 +1,70 @@
+SUMMARY="A cross-platform roguelike game"
+DESCRIPTION="POWDER is a roguelike originaly developed specifically for the Gameboy Advance (GBA).
+It is not a port of an existing roguelike as the controls of the 
+GBA are very different from the traditional keyboard, and the screen
+imposes some additional limitations. It is built around replayability
+and long term ergonomics, not short term learning. It uses actual graphic
+tiles (16x16) rather than the traditional characters."
+HOMEPAGE="http://www.zincland.com/powder"
+SOURCE_URI="http://www.zincland.com/powder/release/powder117_src.tar.gz"
+CHECKSUM_SHA256="070346921ee83bc40943b1e1cb576ab3222cecc319fe10f5c138a4deec85e861"
+COPYRIGHT="2003-2009 Jeff Lait"
+LICENSE="Creative Commons Sampling Plus"
+REVISION="1"
+
+SOURCE_DIR="powder${portVersion}_src"
+
+PROVIDES="
+	powder$secondaryArchSuffix = $portVersion
+	cmd:powder
+	"
+
+ARCHITECTURES="!x86_gcc2 x86"
+SECONDARY_ARCHITECTURES="x86"
+
+REQUIRES="
+	haiku$secondaryArchSuffix
+	lib:libsdl${secondaryArchSuffix}
+	"
+
+BUILD_PREREQUIRES="
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	devel:libsdl${secondaryArchSuffix}
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	"
+
+BUILD()
+{
+	export CXXFLAGS='-O3 -Wno-narrowing -Wno-write-strings'
+	export DESTDIR=$installDestDir
+	export USING_SDL=true
+	
+	./buildall.sh --use-home-dir
+}
+
+
+INSTALL()
+{	
+	echo "Stripping binaries ..."
+    strip powder    
+    
+	echo "Copying binaries to ${appsDir} ..."	
+	mkdir -p ${appsDir}/Powder
+	cp powder ${appsDir}/Powder
+	
+	echo "Copying documentation to ${docDir} ..."	
+	mkdir -p ${docDir}
+	for file in README.TXT LICENSE.TXT CREDITS.TXT; do
+		cp $file ${docDir} || exit 1
+	done
+
+	DIR_DESKBAR="${dataDir}/deskbar/menu/Applications"
+	echo "Making links for Deskbar in ${DIR_DESKBAR} ..."
+	addAppDeskbarSymlink ${appsDir}/Powder/powder "Powder"
+
+	echo "Installation complete"
+}
