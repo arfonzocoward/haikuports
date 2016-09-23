@@ -1,0 +1,55 @@
+SUMMARY="The LOLCODE interpreter"
+DESCRIPTION="lci is a LOLCODE interpreter written in C and is designed \
+to be correct, portable, fast, and precisely documented. LOLCODE is an \
+esoteric programming language.
+- correct: Every effort has been made to test lci's conformance to the \
+LOLCODE language specification. Unit tests come packaged with the lci \
+source code.
+- portable: lci follows the widely ported ANSI C specification allowing it \
+to compile on a broad range of systems.
+- fast: Much effort has gone into producing simple and efficient code \
+whenever possible to the extent that the above points are not \
+compromized.
+- precisely documented: lci uses Doxygen to generate literate code \
+documentation.
+"
+HOMEPAGE="http://lolcode.org"
+COPYRIGHT="2010-2014 Justin J. Meza"
+LICENSE="GNU GPL v3"
+REVISION="1"
+SOURCE_URI="https://github.com/justinmeza/lci/archive/v0.10.5.tar.gz"
+CHECKSUM_SHA256="2c4f4d9810d9990a77fdf727690a89aa228f56bb68be9d5bf45dbe6dbb0cd33c"
+
+ARCHITECTURES="!x86_gcc2 x86"
+SECONDARY_ARCHITECTURES="x86"
+
+PROVIDES="
+	lci = $portVersion
+	cmd:lci
+	"
+REQUIRES="
+	haiku${secondaryArchSuffix}	
+	python >= 2.7
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	"
+	
+BUILD_PREREQUIRES="
+	cmd:cmake
+	cmd:doxygen
+	cmd:g++${secondaryArchSuffix}
+	cmd:make	
+	"
+
+BUILD()
+{
+	cmake -DCMAKE_INSTALL_PREFIX=$prefix -DCMAKE_C_COMPILER="gcc" -DCMAKE_CXX_COMPILER="g++" .
+	make $jobArgs
+}
+
+INSTALL()
+{
+	make install
+}
