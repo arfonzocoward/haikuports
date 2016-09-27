@@ -1,0 +1,110 @@
+SUMMARY="Multiplayer angband (mangband)"
+DESCRIPTION="multiplayer angband (mangband), client and server."
+HOMEPAGE="http://mangband.org"
+SOURCE_URI="https://github.com/mangband/mangband/archive/v1.1.3.tar.gz"
+CHECKSUM_SHA256="95006f88e7b916fbc14fbdb296b78f726539c16501212bbc74df14b4b20db58f"
+COPYRIGHT="TODO"
+LICENSE="GNU GPL v1"
+REVISION="1"
+PATCHES="mangclient_x86-1.1.3.patchset"
+
+SOURCE_DIR="mangband-${portVersion}"
+
+PROVIDES="
+	mangband${secondaryArchSuffix} = $portVersion
+	mangclient${secondaryArchSuffix} = $portVersion
+	cmd:mangband = $portVersion
+	cmd:mangclient = $portVersion
+	"
+
+ARCHITECTURES="!x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+REQUIRES="
+	haiku$secondaryArchSuffix
+	
+	lib:libsdl${secondaryArchSuffix}
+	lib:libncurses${secondaryArchSuffix}
+	"
+
+BUILD_PREREQUIRES="
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	
+	cmd:curl
+	cmd:which	
+	cmd:aclocal
+	cmd:autoreconf
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	
+	devel:libsdl${secondaryArchSuffix}	
+	devel:libncurses${secondaryArchSuffix}
+	"
+
+BUILD()
+{	
+	export CFLAGS="-w"
+	cd src
+	# DEBUG: speedhack - temporarily avoid reconfiguring and rebuilding.
+	#autoconf
+	#runConfigure --omit-dirs "docDir dataRootDir" ./configure --without-x11
+	#make
+}
+
+
+GLOBAL_WRITABLE_FILES="
+	settings directory keep-old
+	"
+
+INSTALL()
+{
+	
+	make install
+	
+	echo "DEBUG I AM IN DIR: $(pwd)"
+	
+	echo "Stripping binaries..."
+	strip mangband
+	strip mangclient
+	
+	echo "Copying binaries to ${appsDir}/Mangband..."
+	mkdir -p ${appsDir}/Mangband
+	cp mangband ${appsDir}/Mangband
+	cp mangclient ${appsDir}/Mangband
+	cp LICENSE ${appsDir}/Mangband
+	cp mangband.cfg ${appsDir}/Mangband
+	cp mangclient.INI ${appsDir}/Mangband/mangclient.INI.sample
+	cp runserv ${appsDir}/Mangband
+	cp -r lib ${appsDir}/Mangband	
+	
+	echo "Making runserv script exectable..."
+	chmod a+x ${appsDir}/Mangband/runserv
+	
+	#
+	# Mangband Settings files
+	#
+	echo "Shuffling settings file(s) to Haiku-friendly place(s)..."
+	mkdir -p ${settingsDir}
+	#mkdir -p ${settingsDir}/Mangband
+		#	Why does this break the package?
+	
+	echo "- mangclient.INI..."
+	cp mangclient.INI ${settingsDir}
+		# This copies into ~/config/settings/global/mangclient.INI
+		#	-- Why /global/ ?
+	ln -sfn ../../settings/global/mangclient.INI ${appsDir}/Mangband/mangclient.INI
+	
+	#
+	# TODO: Anything below here breaks package.
+	#
+	echo "- User preferences files (lib/user/*.prf)..."
+	
+	cp lib/user/* $settingsDir	
+		#	Why don't these files make it into the FS after activation?
+		
+	ln -sfn ../../../../settings/global/options.prf ${appsDir}/Mangband/lib/user/options_test.prf
+
+}
