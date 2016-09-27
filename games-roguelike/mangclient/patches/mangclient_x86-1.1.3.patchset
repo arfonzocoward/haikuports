@@ -1,0 +1,190 @@
+From 05717d65af6ead247d891d5f45350b44e72de84d Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Mon, 26 Sep 2016 22:50:07 +0100
+Subject: Include sys/time.h for Haiku hosts. Changes to be committed:
+ modified: client/netclient.c
+
+
+diff --git a/src/client/netclient.c b/src/client/netclient.c
+index c514684..5ab588d 100644
+--- a/src/client/netclient.c
++++ b/src/client/netclient.c
+@@ -24,6 +24,10 @@
+ #include <unistd.h>
+ #endif
+ 
++#ifdef __HAIKU__
++#include <sys/time.h>
++#endif
++
+ static u32b last_keepalive;
+ static huge last_sent;
+ 
+-- 
+2.7.0
+
+
+From 6692d242b63de227c0a77c27ce3da9ff02ed2c96 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Mon, 26 Sep 2016 22:54:50 +0100
+Subject: Update configure.ac to use -lnetwork for Haiku.
+
+
+diff --git a/src/configure.ac b/src/configure.ac
+index b9b2b44..1802b0a 100644
+--- a/src/configure.ac
++++ b/src/configure.ac
+@@ -15,19 +15,19 @@ AC_PROG_CC
+ # But we do like our debug symbols and warnings
+ CFLAGS="$cflags_save -Wall -g -pipe"
+ 
+-# Evil Hack -- Check for Host OS
+-case "${host_os}" in
++# Evil Hack -- Check for Host OS
++case "${host_os}" in
+ 	mingw*)
+ 	ON_WINDOWS="yes"
+ 	;;
+-	darwin*)
+-	LIBS="$LIBS -L/usr/X11R6/lib"
+-	;;
+-	freebsd*)
+-	CFLAGS="$CFLAGS -I/usr/local/include"
+-	LIBS="$LIBS -L/usr/local/lib" 
+-	;;
+-esac
++	darwin*)
++	LIBS="$LIBS -L/usr/X11R6/lib"
++	;;
++	freebsd*)
++	CFLAGS="$CFLAGS -I/usr/local/include"
++	LIBS="$LIBS -L/usr/local/lib" 
++	;;
++esac
+ 
+ # Checks for libraries.
+ # FIXME: Replace `main' with a function in `-lX11':
+@@ -36,7 +36,7 @@ AC_CHECK_LIB([X11], [main], have_x11="yes")
+ AC_CHECK_LIB([SDL], [main], have_sdl="yes")
+ 
+ # Try finding ncurses or curses...
+-have_curs="yes"
++have_curs="yes"
+ AC_CHECK_LIB([ncurses], [main],,[
+     AC_CHECK_LIB([curses], [main],, have_curs="no")
+     ])
+@@ -74,11 +74,11 @@ then
+     enabled_gcu="yes"
+ fi
+ 
+-# But if we try GCU without ncurses - quit with an error
+-if test "x$enabled_gcu" = xyes && test "x$have_curs" != xyes
+-then
+-    AC_ERROR([For GCU visual module, ncurses library is required. Try getting libncurses5-dev package.])
+-fi
++# But if we try GCU without ncurses - quit with an error
++if test "x$enabled_gcu" = xyes && test "x$have_curs" != xyes
++then
++    AC_ERROR([For GCU visual module, ncurses library is required. Try getting libncurses5-dev package.])
++fi
+ # Set flags
+ #GCU
+ if test "x$enabled_gcu" = xyes
+@@ -102,7 +102,7 @@ then
+     DISPMOD="$DISPMOD SDL"
+ fi
+ 
+-
++
+ # Entering Windows_Hacks zone
+ RES_FILE="#"
+ CLI_MAIN="#"
+@@ -156,6 +156,9 @@ AC_HEADER_TIME
+ AC_STRUCT_TM
+ AC_C_VOLATILE
+ 
++# Check for -lnetwork for Haiku
++AC_SEARCH_LIBS(gethostbyname, [socket, network])
++
+ # Checks for library functions.
+ AC_PROG_GCC_TRADITIONAL
+ AC_FUNC_MALLOC
+@@ -171,6 +174,6 @@ AC_MSG_NOTICE([enabled -$DISPMOD])
+ AC_CONFIG_FILES([Makefile])
+ AC_OUTPUT
+ 
+-AC_MSG_NOTICE([Configured. Type 'make' to build.])
+-#for debug you can use this:
++AC_MSG_NOTICE([Configured. Type 'make' to build.])
++#for debug you can use this:
+ #echo "SDL: $enabled_sdl X11: $enabled_x11 GCU: $enabled_gcu WIN32: $ON_WINDOWS ; $host_os"
+-- 
+2.7.0
+
+
+From 869ce9de6360eee164a4bc38ea0d07cd212f442f Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Mon, 26 Sep 2016 23:46:13 +0100
+Subject: =?UTF-8?q?Instantiate=20inline=20functions=20in=20separate=20head?=
+ =?UTF-8?q?er=20file,=20for=20Haiku.=0A=20Changes=20to=20be=20committed:?=
+ =?UTF-8?q?=0A=09new=20file:=20=20=20client/maim-sdl-bitmap.h=0A=09modifie?=
+ =?UTF-8?q?d:=20=20=20client/maim-sdl.c?=
+
+
+diff --git a/src/client/maim-sdl-bitmap.h b/src/client/maim-sdl-bitmap.h
+new file mode 100644
+index 0000000..cab7c3c
+--- /dev/null
++++ b/src/client/maim-sdl-bitmap.h
+@@ -0,0 +1,8 @@
++extern inline errr SDL_GetPixel (SDL_Surface *f, Uint32 x, Uint32 y, Uint8 *r, Uint8 *g, Uint8 *b);
++
++extern inline errr SDL_PutPixel (SDL_Surface *f, Uint32 x, Uint32 y, Uint8 r, Uint8 g, Uint8 b);
++
++extern inline Uint32 ifloor(Uint32 i);
++
++extern inline Uint32 iceil(Uint32 i);
++
+diff --git a/src/client/maim-sdl.c b/src/client/maim-sdl.c
+index 4fc972a..0be6c58 100644
+--- a/src/client/maim-sdl.c
++++ b/src/client/maim-sdl.c
+@@ -23,6 +23,9 @@
+ #include <string.h>
+ #include <math.h> /* for scaling blits */
+ 
++#ifdef __HAIKU__
++#include "maim-sdl-bitmap.h"	/* Instantiate for SDL bitmap functions */
++#endif
+ 
+ /*
+  *
+-- 
+2.7.0
+
+
+From 858fd699be4a04c009885db8cce67a18a38750f4 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Mon, 26 Sep 2016 23:57:34 +0100
+Subject: =?UTF-8?q?Include=20sys/time.h=20for=20Haiku.=0A=20Changes=20to?=
+ =?UTF-8?q?=20be=20committed:=0A=09modified:=20=20=20sched.c?=
+
+
+diff --git a/src/server/sched.c b/src/server/sched.c
+index 8086a7d..70d2b45 100644
+--- a/src/server/sched.c
++++ b/src/server/sched.c
+@@ -27,6 +27,10 @@
+ #include "angband.h"
+ #include <signal.h>
+ 
++#ifdef __HAIKU__
++#include <sys/time.h>
++#endif
++
+ /*char sched_version[] = VERSION;*/
+ 
+ #ifdef sony_news
+-- 
+2.7.0
+
