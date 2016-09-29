@@ -1,0 +1,134 @@
+From 570e6c9ae5eaa1ee7cf0c3dc6a91b5d0c105c860 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Wed, 28 Sep 2016 17:41:56 +0100
+Subject: Define L_SET for Haiku.
+
+
+diff --git a/src/xpdev/filewrap.h b/src/xpdev/filewrap.h
+index 3e13c81..31ffe7b 100644
+--- a/src/xpdev/filewrap.h
++++ b/src/xpdev/filewrap.h
+@@ -89,6 +89,10 @@
+ 
+ #elif defined(__unix__)
+ 
++	#ifdef __HAIKU__
++		#define L_SET	SEEK_SET
++	#endif
++
+ 	#ifdef __solaris__
+ 		#define LOCK_NB	1
+ 		#define LOCK_SH 2
+-- 
+2.7.0
+
+
+From 3dd40425f0d1ebe55bf19b6e3d5b0fa799bbebc8 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Wed, 28 Sep 2016 17:42:33 +0100
+Subject: Remove duplicate definitions for Haiku.
+
+
+diff --git a/src/xpdev/gen_defs.h b/src/xpdev/gen_defs.h
+index 66a0cd0..9572bdf 100644
+--- a/src/xpdev/gen_defs.h
++++ b/src/xpdev/gen_defs.h
+@@ -156,12 +156,16 @@ enum {
+ 
+ #if !defined(HAS_STDINT_H)
+ 
++#if defined(__HAIKU__)
++#include <stdint.h>
++#else
+ typedef char    int8_t;
+-typedef short   int16_t;
++typedef ulong   uint32_t;
+ typedef long    int32_t;
++#endif
++typedef short   int16_t;
+ typedef uchar   uint8_t;
+ typedef ushort  uint16_t;
+-typedef ulong   uint32_t;
+ 
+ #endif
+ 
+@@ -180,7 +184,7 @@ typedef uint64_t	uintmax_t;
+ typedef int64_t		intmax_t;
+ #define _INTMAX_T_DECLARED
+ 
+-#if !defined(HAS_STDINT_H) && !defined(_UINTPTR_T_DEFINED)
++#if !defined(HAS_STDINT_H) && !defined(_UINTPTR_T_DEFINED) && !defined(__HAIKU__)
+ typedef uintmax_t	uintptr_t;
+ typedef intmax_t	intptr_t;
+ #endif
+-- 
+2.7.0
+
+
+From f1a3463799931ea5f9ea6e7f62de355dbfe4a1a5 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Wed, 28 Sep 2016 18:22:34 +0100
+Subject: Define SUN_LEN() for Haiku. modified: src/xpdev/multisock.c
+
+
+diff --git a/src/xpdev/multisock.c b/src/xpdev/multisock.c
+index a9728c8..2e77c64 100644
+--- a/src/xpdev/multisock.c
++++ b/src/xpdev/multisock.c
+@@ -9,6 +9,19 @@
+ #include "multisock.h"
+ #include <stdarg.h>
+ 
++#ifdef __HAIKU__
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <sys/socket.h>
++#include <sys/un.h>
++#include <unistd.h>
++
++/* actual length of an initialized sockaddr_un */
++#define SUN_LEN(su) \
++	(sizeof(*(su)) - sizeof((su)->sun_path) + strlen((su)->sun_path))
++
++#endif
++
+ struct xpms_set* DLLCALL xpms_create(unsigned int retries, unsigned int wait_secs,
+ 	int (*lprintf)(int level, const char *fmt, ...))
+ {
+@@ -60,7 +73,7 @@ BOOL DLLCALL xpms_add(struct xpms_set *xpms_set, int domain, int type,
+ 
+ #ifndef _WIN32
+ 	struct addrinfo		dummy;
+-	struct sockaddr_un	un_addr;
++	struct sockaddr_un	un_addr;	
+ 
+ 	if(domain == AF_UNIX) {
+ 		memset(&dummy, 0, sizeof(dummy));
+-- 
+2.7.0
+
+
+From e3da96ad32493bf966ed7068cc8dec45af335979 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Thu, 29 Sep 2016 16:10:22 +0100
+Subject: =?UTF-8?q?Avoid=20calling=20conn=5Fclose()=20on=20Haiku=20(tempor?=
+ =?UTF-8?q?ary=20workaround).=0A=09modified:=20=20=20term.c?=
+
+
+diff --git a/src/syncterm/term.c b/src/syncterm/term.c
+index 98ddafc..92e4d29 100644
+--- a/src/syncterm/term.c
++++ b/src/syncterm/term.c
+@@ -2667,7 +2667,9 @@ BOOL doterm(struct bbslist *bbs)
+ 							cterm_clearscreen(cterm,cterm->attr);	/* Clear screen into scrollback */
+ 							scrollback_lines=cterm->backpos;
+ 							cterm_end(cterm);
++#ifndef __HAIKU__
+ 							conn_close();
++#endif
+ 							hidemouse();
+ 							hold_update=oldmc;
+ 							return(key==0x2d00 /* Alt-X? */ || key == CIO_KEY_QUIT);
+-- 
+2.7.0
+
