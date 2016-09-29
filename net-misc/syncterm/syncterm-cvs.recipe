@@ -1,0 +1,107 @@
+SUMMARY="A BBS terminal program"
+DESCRIPTION="SyncTERM is a BBS terminal program which supports:
+
+- Windows, Linux, OpenBSD, NetBSD, OS X, and FreeBSD
+- X/Y/ZModem up/downloads
+- Runs in full-screen mode on ALL platforms (ALT-Enter switches modes)
+- *nix versions will run using SDL, X11, or using curses
+- Full ANSI-BBS support
+- Full CGTerm Commodore 64 PETSCII support
+- Full Atari 8-bit ATASCII support
+- DoorWay support
+- Support for IBM low and high ASCII including the face graphics (☺ and ☻) and card symbols (♥, ♦, ♣, and ♠) which so many other terms have problems with (may not work in curses mode... depends on the terminal being used).
+- Phone books
+- Multiple screen modes (80x25, 80x28, 80x43, 80x50, 80x60, 132x25, 132x28, 132x30, 132x34, 132x43, 132x50, 132x60)
+- ANSI Music (through the sound card if installed)
+- Telnet, RLogin, SSH, RAW, modem, shell (*nix only) and direct serial connections
+- Auto-login with Synchronet RLogin
+- Large Scrollback
+- Mouse-driven menus
+- Copy/Paste
+- Supports character pacing for ANSI animation as well as the VT500 ESC[*r sequence to allow dynamic speed changes
+- Comes with 43 standard fonts and allows the BBS to change the current font *and* upload custom fonts. This tool will allow you to create fonts for use with SyncTERM.
+- Supports Operation Overkill ][ Terminal emulation
+"
+HOMEPAGE="http://syncterm.bbsdev.net/"
+
+#SOURCE_URI="cvs://:pserver:anonymous@cvs.synchro.net:/cvsroot/sbbs/syncterm"
+SOURCE_URI="http://syncterm.bbsdev.net/syncterm-src.tgz"
+CHECKSUM_SHA256="20f533b4bac27e16e55f7bea5442b9f497b700d363c343fb7cf6509cc62d30e9"
+	# As of 28Sep16
+COPYRIGHT="TODO"
+LICENSE="GNU GPL v1"
+REVISION="1"
+PATCHES="syncterm_x86-cvs.patchset"
+
+SOURCE_DIR="syncterm-20160928"
+	# The above needs to be updated to match the daily snapshot's directory name.
+
+PROVIDES="
+	syncterm${secondaryArchSuffix} = $portVersion
+	cmd:syncterm = $portVersion
+	"
+
+ARCHITECTURES="x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+REQUIRES="
+	haiku$secondaryArchSuffix
+	
+	lib:libsdl${secondaryArchSuffix}
+	lib:libncurses${secondaryArchSuffix}
+	"
+
+BUILD_PREREQUIRES="
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	cmd:patch
+	cmd:perl
+	cmd:which
+	
+	#cmd:curl		
+	#cmd:aclocal
+	#cmd:autoreconf
+	
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	
+	devel:libsdl${secondaryArchSuffix}	
+	devel:libncurses${secondaryArchSuffix}
+	"
+
+BUILD()
+{	
+	#export CFLAGS="-w"
+	#cd src
+	#autoconf
+	#runConfigure --omit-dirs "docDir dataRootDir" ./configure --without-x11
+	#runConfigure --omit-dirs "docDir dataRootDir" ./configure --without-x11
+	
+	export WITHOUT_CRYPTLIB=aye
+	#export DEBUG=aye
+	export RELEASE=aye
+	export PREFIX=${prefix}
+	
+	cd src/syncterm
+	make ${jobArgs}
+}
+
+
+#GLOBAL_WRITABLE_FILES="
+#	settings directory keep-old
+#	"
+
+INSTALL()
+{	
+	#make install
+	
+	mkdir -p ${appsDir}/SyncTERM
+	cp src/syncterm/gcc.haiku.bepc.exe.release/syncterm ${appsDir}/SyncTERM/SyncTERM
+	
+	echo "DEBUG: \$portDir: ${portDir}"
+	addResourcesToBinaries ${portDir}/additional-files/syncterm.rdef ${appsDir}/SyncTERM/SyncTERM
+		
+	addAppDeskbarSymlink ${appsDir}/SyncTERM/SyncTERM
+}
