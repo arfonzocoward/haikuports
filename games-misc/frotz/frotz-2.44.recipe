@@ -1,0 +1,72 @@
+SUMMARY="An interactive fiction interpreter"
+DESCRIPTION="Frotz is an interpreter for Infocom games and other Z-machine games. \
+It complies with standard 1.0 of Graham Nelson's specification. It was written by \
+Stefan Jokisch in 1995-1997. It was ported to Unix by Galen Hazelwood. Currently \
+the Unix port is being developed and maintained by David Griffith. The Unix port \
+is also the canonical core version upon which all other ports are based.
+
+Features:
+
+- Compiles and runs without changes on most common flavors of Unix, both open source and not. This includes MacOS X.
+- Portable to many other operating systems and hardware.
+- Plays all Z-code games including V6.
+- Old-style sound support through OSS driver.
+- Config files.
+- User-configurable error-checking.
+- Optional dumb interface.
+- Uses the Quetzal save file format.
+- Distributed under the GNU General Public License.
+- Packages available for all popular distributions of Linux and BSD.
+"
+HOMEPAGE="http://frotz.sourceforge.net/"
+SOURCE_URI="http://heanet.dl.sourceforge.net/project/frotz/frotz/frotz-2.44.tar.gz"
+CHECKSUM_SHA256="73ec20f034d2e91578c387cff3af249d52b8833e4271eb1053f6d335722fe3ec"
+COPYRIGHT="TODO"
+LICENSE="GNU GPL v1"
+REVISION="1"
+PATCHES="frotz-2.44.patchset"
+
+PROVIDES="
+	frotz${secondaryArchSuffix} = $portVersion
+	cmd:frotz = $portVersion
+	"
+
+ARCHITECTURES="x86_gcc2"
+SECONDARY_ARCHITECTURES="x86"
+
+REQUIRES="
+	haiku$secondaryArchSuffix
+	
+	lib:libncurses${secondaryArchSuffix}
+	"
+
+BUILD_PREREQUIRES="
+	cmd:gcc$secondaryArchSuffix
+	cmd:make
+	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+
+	devel:libncurses${secondaryArchSuffix}
+	"
+	
+BUILD()
+{	
+	export PREFIX=${prefix}
+	
+	make ${jobArgs}
+}
+
+
+INSTALL()
+{	
+	echo "Installing frotz..."
+	
+	mkdir -p ${appsDir}/Frotz
+	cp frotz ${appsDir}/Frotz
+	
+	mkdir -p ${binDir}
+	ln -s ../apps/Frotz/frotz ${binDir}/frotz	
+	
+}

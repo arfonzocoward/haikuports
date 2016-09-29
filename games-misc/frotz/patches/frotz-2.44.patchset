@@ -1,0 +1,47 @@
+From 96f5eb7a03984a0f101e5f63fcba54f9efca41a2 Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Thu, 29 Sep 2016 17:58:03 +0100
+Subject: Use ncurses for Haiku. modified: Makefile
+
+
+diff --git a/Makefile b/Makefile
+index 31f271f..9247638 100644
+--- a/Makefile
++++ b/Makefile
+@@ -73,8 +73,8 @@ COLOR_DEFS = -DCOLOR_SUPPORT
+ # curses library won't work, comment out the first option and uncomment
+ # the second.
+ #
+-CURSES = -lcurses
+-#CURSES = -lncurses
++#CURSES = -lcurses
++CURSES = -lncurses
+ 
+ # Uncomment this if your need to use ncurses instead of the
+ # vendor-supplied curses library.  This just tells the compile process
+-- 
+2.7.0
+
+
+From ea8f4258e683d1816bd278c114b12752595c35ad Mon Sep 17 00:00:00 2001
+From: "Arfonzo J. Coward" <arfonzo@gmail.com>
+Date: Thu, 29 Sep 2016 18:10:41 +0100
+Subject: Remove root checking for Haiku.
+
+
+diff --git a/src/curses/ux_init.c b/src/curses/ux_init.c
+index b6f4e1a..4291adc 100644
+--- a/src/curses/ux_init.c
++++ b/src/curses/ux_init.c
+@@ -146,7 +146,7 @@ void os_process_arguments (int argc, char *argv[])
+     char *home;
+     char configfile[FILENAME_MAX + 1];
+ 
+-#ifndef WIN32
++#if !defined(WIN32) && !defined(__HAIKU__)
+     if ((getuid() == 0) || (geteuid() == 0)) {
+         printf("I won't run as root!\n");
+         exit(1);
+-- 
+2.7.0
+
