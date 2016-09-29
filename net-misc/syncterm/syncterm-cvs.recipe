@@ -71,6 +71,10 @@ BUILD_REQUIRES="
 	devel:libncurses${secondaryArchSuffix}
 	"
 
+ADDITIONAL_FILES="
+	syncterm.rdef
+	"
+	
 BUILD()
 {	
 	#export CFLAGS="-w"
