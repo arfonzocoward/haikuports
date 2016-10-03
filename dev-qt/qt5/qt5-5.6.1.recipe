@@ -86,6 +86,34 @@ PROVIDES="
 	lib:libQt5DesignerComponents$secondaryArchSuffix = $portVersion compat >= 5
 	# qtwebchannel
 	lib:libQt5WebChannel$secondaryArchSuffix = $portVersion compat >= 5
+	
+	cmd:canbusutil$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:fixqt4headers.pl$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qgltf$secondaryArchSuffix = $portVersion compat >= 5
+	
+	#qml
+	cmd:qml$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmleasing$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmlimportscanner$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmllint$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmlmin$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmlplugindump$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmlprofiler$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmlscene$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmltestrunner$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qmlviewer$secondaryArchSuffix = $portVersion compat >= 5
+	
+	cmd:qtdiag$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qtpaths$secondaryArchSuffix = $portVersion compat >= 5
+	cmd:qtplugininfo$secondaryArchSuffix = $portVersion compat >= 5
+	
+	#libqt53d
+	lib:libqt53dquickinput$secondaryArchSuffix = $portVersion compat >= 5
+	lib:libqt53dquickrender$secondaryArchSuffix = $portVersion compat >= 5
+	lib:libqt53drender$secondaryArchSuffix = $portVersion compat >= 5
+	
+	lib:libqt5labstemplates$secondaryArchSuffix = $portVersion compat >= 5
+	lib:libqt5serialbus$secondaryArchSuffix = $portVersion compat >= 5
 	"
 
 REQUIRES="
@@ -102,6 +130,7 @@ REQUIRES="
 	lib:libtiff$secondaryArchSuffix
 	lib:libxml2$secondaryArchSuffix
 	lib:libz$secondaryArchSuffix
+	lib:libsqlite3$secondaryArchSuffix
 	"
 
 PROVIDES_devel="
@@ -132,6 +161,9 @@ PROVIDES_devel="
 	devel:libQt53DInput$secondaryArchSuffix = $portVersion compat >= 5
 	devel:libQt53DLogic$secondaryArchSuffix = $portVersion compat >= 5
 	devel:libQt53DQuick$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt53DQuickInput$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt53DQuickRender$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt53DRender$secondaryArchSuffix = $portVersion compat >= 5
 	#devel:libQt53DQuickRenderer$secondaryArchSuffix = $portVersion compat >= 5
 	#devel:libQt53DRenderer$secondaryArchSuffix = $portVersion compat >= 5
 	# qtconnectivity
@@ -170,6 +202,15 @@ PROVIDES_devel="
 	devel:libQt5Help$secondaryArchSuffix = $portVersion compat >= 5
 	# qtwebchannel
 	devel:libQt5WebChannel$secondaryArchSuffix = $portVersion compat >= 5
+	
+	devel:libQt5Bootstrap$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5LabsControls$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5LabsTemplates$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5OpenGLExtensions$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5PlatformSupport$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5QmlDevTools$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5SerialBus$secondaryArchSuffix = $portVersion compat >= 5
+	devel:libQt5UITools$secondaryArchSuffix = $portVersion compat >= 5
 
 	cmd:assistant$secondaryArchSuffix = $portVersion compat >= 5
 	cmd:designer$secondaryArchSuffix = $portVersion compat >= 5
@@ -306,9 +347,13 @@ INSTALL()
 		libQt5Location libQt5Help libQt5Designer libQt5DesignerComponents \
 		libQt5CLucene libQt5Bluetooth \
 		libQt53DQuick libQt53DLogic libQt53DInput libQt53DCore \
-		libEnginio
+		libEnginio \
+		libQt53DQuickInput libQt53DQuickRender libQt53DRender \
+		libQt5LabsControls libQt5LabsTemplates \
+		libQt5SerialBus
 		# libQt5Declarative libQt53DQuickRenderer libQt53DCollision
 		# libQt53DRenderer
+		
 
 	cd $libDir
 	for i in lib*.so.5.*;do
