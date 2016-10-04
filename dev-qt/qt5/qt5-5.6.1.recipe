@@ -9,10 +9,13 @@ LICENSE="GNU LGPL v2"
 
 SOURCE_URI="https://download.qt.io/official_releases/qt/5.6/$portVersion/single/qt-everywhere-opensource-src-$portVersion.tar.gz"
 SOURCE_URI_2="https://download.qt.io/community_releases/5.6/$portVersion/qtwebkit-opensource-src-$portVersion.tar.xz"
+SOURCE_URI_3="https://download.qt.io/official_releases/qt/5.6/$portVersion/submodules/qtwebengine-opensource-src-5.6.1.tar.xz"
 CHECKSUM_SHA256="2e5be28fcaaf95e179041a0eb95ccca69b17f50e39245e20974fad9469c10f2f"
 CHECKSUM_SHA256_2="f5cfbfa5fad2b65a9be907d426f99694b86a04c3bb5a8814b21bd0ade4c672aa"
+CHECKSUM_SHA256_3="bdf0ac04b5162502b1c43d0763233c12d5cb73625bec4d90755e73ffa863607b"
 SOURCE_DIR="qt-everywhere-opensource-src-$portVersion"
 SOURCE_DIR_2="qtwebkit-opensource-src-$portVersion"
+SOURCE_DIR_3="qtwebengine-opensource-src-$portVersion"
 PATCHES="qt5-$portVersion.patchset"
 PATCHES_2="qtwebkit-$portVersion.patchset"
 
@@ -289,6 +292,7 @@ BUILD_PREREQUIRES="
 	cmd:bison
 	cmd:gperf
 	cmd:awk
+	cmd:git
 	"
 
 BUILD()
@@ -315,7 +319,18 @@ BUILD()
 	make $jobArgs
 
 	# build qtwebkit
-	cd $sourceDir2
+	##cd $sourceDir2
+	##PATH=$PATH:$sourceDir/qtbase/bin
+	##qmake .
+	##make
+	
+	# Build QtWebEngine
+	echo ""
+	echo ""
+	echo "------------------------------------------"
+	echo "DEBUG: Building QtWebEngine, sourceDir3..."
+	echo "------------------------------------------"
+	cd $sourceDir3
 	PATH=$PATH:$sourceDir/qtbase/bin
 	qmake .
 	make
@@ -329,7 +344,12 @@ INSTALL()
 	#make $jobArgs docs
 	#make install_docs
 
-	cd $sourceDir2
+	##cd $sourceDir2
+	##make install
+	
+	# QtWebEngine
+	echo "DEBUG: Installing QtWebEngine, sourceDir3..."
+	cd $sourceDir3
 	make install
 
 	fixPkgconfig
@@ -340,6 +360,7 @@ INSTALL()
 		libQt5Sql libQt5Test libQt5Widgets libQt5Xml \
 		libQt5XmlPatterns libQt5WebSockets libQt5WebKitWidgets \
 		libQt5WebKit libQt5WebChannel libQt5Svg \
+		##libQtWebEngine libQtWebView \
 		libQt5SerialPort libQt5Sensors libQt5ScriptTools libQt5Script \
 		libQt5QuickWidgets libQt5QuickTest libQt5QuickParticles \
 		libQt5Quick libQt5Qml libQt5Positioning libQt5Nfc \
@@ -351,6 +372,7 @@ INSTALL()
 		libQt53DQuickInput libQt53DQuickRender libQt53DRender \
 		libQt5LabsControls libQt5LabsTemplates \
 		libQt5SerialBus
+		
 		# libQt5Declarative libQt53DQuickRenderer libQt53DCollision
 		# libQt53DRenderer
 		
