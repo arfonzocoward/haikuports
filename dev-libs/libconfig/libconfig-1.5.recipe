@@ -1,0 +1,88 @@
+SUMMARY="A simple library for processing configuration files"
+DESCRIPTION="Libconfig is a simple library for processing structured \
+configuration files, like this one: test.cfg. This file format is more \
+compact and more readable than XML. And unlike XML, it is type-aware, so \
+it is not necessary to do string parsing in application code.
+
+Libconfig is very compact — a fraction of the size of the expat XML parser \
+library. This makes it well-suited for memory-constrained systems like \
+handheld devices.
+
+The library includes bindings for both the C and C++ languages. It works \
+on POSIX-compliant UNIX and UNIX-like systems (GNU/Linux, Mac OS X, Solaris, \
+FreeBSD), Android, and Windows (2000, XP and later)."
+HOMEPAGE="http://www.hyperrealm.com/libconfig/"
+COPYRIGHT="2015 TODO"
+LICENSE="GNU LGPL v2"
+SOURCE_URI="http://www.hyperrealm.com/libconfig/libconfig-${portVersion}.tar.gz"
+CHECKSUM_SHA256="e31daa390d8e4461c8830512fe2e13ba1a3d6a02a2305a02429eec61e68703f6"
+REVISION="1"
+ARCHITECTURES="!x86_gcc2 x86 ?x86_64"
+SECONDARY_ARCHITECTURES="x86"
+
+PROVIDES="
+	libconfig${secondaryArchSuffix} = $portVersion
+	lib:libconfig${secondaryArchSuffix} = $portVersion
+	lib:libconfig++${secondaryArchSuffix} = $portVersion
+	"
+
+REQUIRES="
+	haiku${secondaryArchSuffix}
+	"
+
+PROVIDES_devel="
+	libconfig${secondaryArchSuffix}_devel = $portVersion
+	lib:libconfig${secondaryArchSuffix} = $portVersion
+	lib:libconfig++${secondaryArchSuffix} = $portVersion
+	devel:libconfig${secondaryArchSuffix} = $portVersion
+	devel:libconfig++${secondaryArchSuffix} = $portVersion
+	"
+
+REQUIRES_devel="
+	haiku${secondaryArchSuffix}
+	"
+
+#PROVIDES_docs="
+#	libconfig${secondaryArchSuffix}_docs = $portVersion
+#	"
+
+#REQUIRES_docs="
+#	libconfig${secondaryArchSuffix}_devel == $portVersion
+#	"
+
+BUILD_REQUIRES="
+	haiku${secondaryArchSuffix}_devel
+	"
+
+BUILD_PREREQUIRES="
+	cmd:awk
+	cmd:bison
+	cmd:flex
+	cmd:gcc${secondaryArchSuffix}
+	cmd:make
+	cmd:yacc
+	"
+
+BUILD()
+{	
+	runConfigure ./configure
+
+	make $jobArgs
+}
+
+INSTALL()
+{
+	make install	
+	
+	# devel package
+	prepareInstalledDevelLibs \
+		libconfig \
+		libconfig++
+	
+	cp lib/.libs/libconfig*.so* \
+		$developLibDir
+		
+	fixPkgconfig
+	
+	packageEntries devel ${developDir}
+}
