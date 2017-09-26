@@ -1,22 +1,22 @@
-From afe202899f857db57d64d4f1f0da80da7a69e0e6 Mon Sep 17 00:00:00 2001
+From 9d30974e209c35115d24295622b5480e272a41fd Mon Sep 17 00:00:00 2001
 From: Jerome Duval <jerome.duval@gmail.com>
-Date: Sun, 18 Oct 2015 14:30:44 +0000
-Subject: build fix
+Date: Mon, 17 Jul 2017 20:40:32 +0200
+Subject: link JamExt against libstdc++.
 
 
-diff --git a/Sources/CLanguageInterface.h b/Sources/CLanguageInterface.h
-index f044b3a..8cff660 100644
---- a/Sources/CLanguageInterface.h
-+++ b/Sources/CLanguageInterface.h
-@@ -116,7 +116,7 @@ protected:
- 		mutable KeywordMap fKeywordMap;
- //		void GenerateKeywordMap(const char *ext);
- 
--static	vector<CLanguageInterface*>	fInterfaces;
-+static	std::vector<CLanguageInterface*>	fInterfaces;
- };
- 
- inline const char* CLanguageInterface::LineCommentStart() const
+diff --git a/Languages/Sources/Jamfile b/Languages/Sources/Jamfile
+index 943b926..f67076d 100644
+--- a/Languages/Sources/Jamfile
++++ b/Languages/Sources/Jamfile
+@@ -76,7 +76,7 @@ PeLanguage HtmlCssJsPhpExt
+ # <pe-src>
+ PeLanguage JamExt 
+ 	: Jam_Language.cpp 
+-	: be 
++	: be $(STDC++LIB)
+ 	: keywords.jam.rsrc 
+ 	;
+ # </pe-src>
 -- 
-2.2.2
+2.12.2
 

@@ -11,9 +11,9 @@ SOURCE_URI="http://sourceforge.net/projects/tuxpaint/files/tuxpaint/0.9.22/tuxpa
 CHECKSUM_SHA256="8abd932f8e36fad795bba0290c094c9c221e424c4b9aa8c763b7fb3459cb2be3"
 COPYRIGHT="2002-2010 Bill Kendrick and others"
 LICENSE="GNU GPL v2"
-REVISION="1"
+REVISION="3"
 
-ARCHITECTURES="x86 ?x86_gcc2 ?x86_64"
+ARCHITECTURES="x86_gcc2 ?x86 x86_64"
 
 PATCHES="tuxpaint-$portVersion.patchset"
 
@@ -27,11 +27,11 @@ REQUIRES="
 	lib:libiconv
 	lib:libintl
 	lib:libpaper
-	lib:libpng
+	lib:libpng16
 	lib:libsdl
-	lib:libSDL_ttf
 	lib:libSDL_image
 	lib:libSDL_mixer
+	lib:libSDL_ttf
 	lib:libz
 	"
 
@@ -43,18 +43,18 @@ BUILD_REQUIRES="
 	devel:libpaper
 	devel:libpng
 	devel:libsdl
-	devel:libSDL_ttf
 	devel:libSDL_image
 	devel:libSDL_mixer
+	devel:libSDL_ttf
 	devel:libz
 	"
 
 BUILD_PREREQUIRES="
-	cmd:make
 	cmd:gcc
 	cmd:gperf
-	cmd:pkg_config
 	cmd:ld
+	cmd:make
+	cmd:pkg_config
 	"
 
 USER_SETTING_FILES="
